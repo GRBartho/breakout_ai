@@ -27,12 +27,20 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+import ale_py
 import gymnasium as gym
 from gymnasium.wrappers import (
     AtariPreprocessing,
     FrameStackObservation,
     RecordVideo,
 )
+
+# ale-py's Atari environments (the "ALE/..." namespace, e.g. ALE/Breakout-v5)
+# are registered with gymnasium as a side effect of this call. Without it,
+# gym.make(ENV_ID) raises `NamespaceNotFound: Namespace ALE not found` even
+# when ale-py is installed, depending on how entry-point plugin discovery
+# resolved in your environment.
+gym.register_envs(ale_py)
 
 # --------------------------------------------------------------------------
 # Environment setup
