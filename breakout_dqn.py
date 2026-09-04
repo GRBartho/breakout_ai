@@ -3,10 +3,13 @@ Deep Q-Network (DQN) agent for Atari Breakout, using PyTorch + CUDA.
 
 Requirements (install into your venv first):
     pip install torch numpy gymnasium "gymnasium[atari]" "gymnasium[accept-rom-license]" ale-py
+    pip install moviepy   # optional, only needed for --video-dir
 
 Usage:
-    python breakout_dqn.py --train                 # train from scratch
-    python breakout_dqn.py --play checkpoint.pt     # watch a trained agent play
+    python breakout_dqn.py --train                        # train from scratch (headless, fastest)
+    python breakout_dqn.py --train --render                # train with a live window (slow, real-time viewing)
+    python breakout_dqn.py --train --video-dir videos/     # periodically save mp4 clips of the agent's progress
+    python breakout_dqn.py --play checkpoint.pt             # watch a trained agent play
 
 The script will automatically use CUDA if available (checks torch.cuda.is_available()),
 otherwise falls back to CPU.
@@ -28,6 +31,7 @@ import gymnasium as gym
 from gymnasium.wrappers import (
     AtariPreprocessing,
     FrameStackObservation,
+    RecordVideo,
 )
 
 # --------------------------------------------------------------------------
@@ -230,17 +234,51 @@ class DQNAgent:
 # --------------------------------------------------------------------------
 
 
+def record_eval_video(agent: DQNAgent, video_dir: str, name_prefix: str):
+    """Run one greedy episode in a fresh env and save it as an mp4.
+
+    Uses a separate env instance so recording never slows down the main
+    (headless) training loop. Requires `pip install moviepy`.
+    """
+    env = gym.make(ENV_ID, frameskip=1, render_mode="rgb_array")
+    env = AtariPreprocessing(
+        env,
+        noop_max=30,
+        frame_skip=4,
+        screen_size=84,
+        terminal_on_life_loss=True,
+        grayscale_obs=True,
+        scale_obs=False,
+    )
+    env = FrameStackObservation(env, stack_size=4)
+    env = RecordVideo(env, video_folder=video_dir, name_prefix=name_prefix, episode_trigger=lambda ep: True)
+
+    state, _ = env.reset()
+    done = False
+    total_reward = 0.0
+    while not done:
+        action = agent.select_action(state, greedy=True)
+        state, reward, terminated, truncated, _ = env.step(action)
+        done = terminated or truncated
+        total_reward += reward
+    env.close()
+    print(f"Saved eval video ({name_prefix}, reward={total_reward}) to {video_dir}")
+
+
 def train(
     num_frames: int = 2_000_000,
     warmup_frames: int = 50_000,
     checkpoint_path: str = "breakout_dqn.pt",
     checkpoint_every: int = 50_000,
     log_every: int = 1_000,
+    render: bool = False,
+    video_dir: str = None,
+    video_every_frames: int = 100_000,
 ):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    env = make_env()
+    env = make_env(render_mode="human" if render else None)
     n_actions = env.action_space.n
     agent = DQNAgent(n_actions=n_actions, device=device)
 
@@ -284,6 +322,9 @@ def train(
         if frame_idx % checkpoint_every == 0:
             agent.save(checkpoint_path)
             print(f"Saved checkpoint to {checkpoint_path}")
+
+        if video_dir and frame_idx % video_every_frames == 0:
+            record_eval_video(agent, video_dir, name_prefix=f"frame_{frame_idx}")
 
     agent.save(checkpoint_path)
     print(f"Training complete. Final checkpoint saved to {checkpoint_path}")
@@ -329,10 +370,33 @@ def main():
     parser.add_argument("--frames", type=int, default=2_000_000, help="Number of training frames")
     parser.add_argument("--checkpoint", type=str, default="breakout_dqn.pt", help="Checkpoint file path")
     parser.add_argument("--episodes", type=int, default=5, help="Episodes to play")
+    parser.add_argument(
+        "--render",
+        action="store_true",
+        help="During --train, open a live window showing the agent play in real time (slows training a lot)",
+    )
+    parser.add_argument(
+        "--video-dir",
+        type=str,
+        default=None,
+        help="During --train, periodically save an mp4 of a greedy eval episode into this directory (requires `pip install moviepy`)",
+    )
+    parser.add_argument(
+        "--video-every",
+        type=int,
+        default=100_000,
+        help="Frames between periodic eval video recordings (used with --video-dir)",
+    )
     args = parser.parse_args()
 
     if args.train:
-        train(num_frames=args.frames, checkpoint_path=args.checkpoint)
+        train(
+            num_frames=args.frames,
+            checkpoint_path=args.checkpoint,
+            render=args.render,
+            video_dir=args.video_dir,
+            video_every_frames=args.video_every,
+        )
     elif args.play:
         play(checkpoint_path=args.play, episodes=args.episodes)
     else:
