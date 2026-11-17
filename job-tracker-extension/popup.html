@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Job Tracker</title>
+  <link rel="stylesheet" href="src/common.css">
+  <link rel="stylesheet" href="src/popup.css">
+</head>
+<body>
+  <header>
+    <div class="brand"><img src="icons/icon32.png" alt="" width="20" height="20"> Job Tracker</div>
+    <button id="open-dashboard" class="link">All applications →</button>
+  </header>
+
+  <div id="banner" class="banner hidden"></div>
+
+  <form id="job-form" autocomplete="off">
+    <input type="hidden" name="id">
+    <label class="field"><span>Position</span><input type="text" name="title" required placeholder="e.g. Senior Software Engineer"></label>
+    <label class="field"><span>Company</span><input type="text" name="company" required placeholder="e.g. Acme Corp"></label>
+    <div class="row">
+      <label class="field"><span>Location</span><input type="text" name="location"></label>
+      <label class="field"><span>Salary</span><input type="text" name="salary"></label>
+    </div>
+    <label class="field"><span>Job posting URL</span><input type="url" name="url"></label>
+
+    <fieldset>
+      <legend>Progress</legend>
+      <div id="milestones" class="milestones"></div>
+    </fieldset>
+
+    <label class="field"><span>Notes</span><textarea name="notes" rows="2" placeholder="Recruiter name, referral, follow-up date…"></textarea></label>
+
+    <div class="actions">
+      <span id="status-pill"></span>
+      <button type="submit" class="primary" id="save-btn">Save application</button>
+    </div>
+  </form>
+
+  <section id="recent">
+    <h2>Recent</h2>
+    <ul id="recent-list"></ul>
+  </section>
+
+  <script src="src/shared.js"></script>
+  <script src="src/extractor.js"></script>
+  <script src="src/popup.js"></script>
+</body>
+</html>

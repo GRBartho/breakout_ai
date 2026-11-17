@@ -1,0 +1,116 @@
+:root {
+  --bg: #f7f8fa;
+  --surface: #ffffff;
+  --border: #e3e6eb;
+  --text: #1b1f24;
+  --muted: #667085;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-soft: #e8efff;
+  --danger: #dc2626;
+  --radius: 8px;
+
+  --st-saved: #6b7280;
+  --st-applied: #2563eb;
+  --st-responded: #7c3aed;
+  --st-interviewScheduled: #d97706;
+  --st-interviewed: #ea580c;
+  --st-offer: #16a34a;
+  --st-rejected: #dc2626;
+  --st-withdrawn: #64748b;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111418;
+    --surface: #1a1e24;
+    --border: #2c323b;
+    --text: #e6e8eb;
+    --muted: #98a2b3;
+    --accent: #5b8cff;
+    --accent-hover: #7aa2ff;
+    --accent-soft: #1e2a44;
+    --danger: #f87171;
+    --st-saved: #9ca3af;
+    --st-applied: #5b8cff;
+    --st-responded: #a78bfa;
+    --st-interviewScheduled: #fbbf24;
+    --st-interviewed: #fb923c;
+    --st-offer: #4ade80;
+    --st-rejected: #f87171;
+    --st-withdrawn: #94a3b8;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 13px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+a { color: var(--accent); }
+
+label.field { display: block; margin-bottom: 8px; }
+label.field > span { display: block; font-size: 11px; font-weight: 600; color: var(--muted); margin-bottom: 3px; text-transform: uppercase; letter-spacing: .03em; }
+
+input[type="text"], input[type="url"], input[type="date"], input[type="datetime-local"], input[type="search"], select, textarea {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+textarea { resize: vertical; min-height: 54px; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; border-color: transparent; }
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 6px 12px;
+}
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+button.primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+button.danger { color: var(--danger); }
+button.link { border: none; background: none; padding: 0; color: var(--accent); }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--pill);
+  background: color-mix(in srgb, var(--pill) 14%, transparent);
+}
+.pill::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--pill); }
+.pill[data-status="saved"] { --pill: var(--st-saved); }
+.pill[data-status="applied"] { --pill: var(--st-applied); }
+.pill[data-status="responded"] { --pill: var(--st-responded); }
+.pill[data-status="interviewScheduled"] { --pill: var(--st-interviewScheduled); }
+.pill[data-status="interviewed"] { --pill: var(--st-interviewed); }
+.pill[data-status="offer"] { --pill: var(--st-offer); }
+.pill[data-status="rejected"] { --pill: var(--st-rejected); }
+.pill[data-status="withdrawn"] { --pill: var(--st-withdrawn); }
+
+.milestones { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+.milestones label { display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 3px 0; }
+.milestones input { accent-color: var(--accent); margin: 0; }
+.milestones .date { font-size: 11px; color: var(--muted); }
+
+.muted { color: var(--muted); }
+.hidden { display: none !important; }

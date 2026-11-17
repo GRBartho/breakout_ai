@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Job Applications</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="src/common.css">
+  <link rel="stylesheet" href="src/dashboard.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><img src="icons/icon48.png" alt="" width="28" height="28"><h1>Job Applications</h1></div>
+    <div class="top-actions">
+      <button id="add-btn" class="primary">+ Add manually</button>
+      <button id="export-csv">Export CSV</button>
+      <button id="export-json">Backup</button>
+      <button id="import-btn">Restore</button>
+      <input type="file" id="import-file" accept="application/json,.json" class="hidden">
+    </div>
+  </header>
+
+  <main>
+    <section id="stats" class="stats"></section>
+
+    <section id="upcoming" class="upcoming hidden"></section>
+
+    <section class="toolbar">
+      <input type="search" id="search" placeholder="Search position, company, location, notes…">
+      <select id="status-filter"><option value="">All statuses</option></select>
+      <select id="sort">
+        <option value="applied-desc">Newest applied</option>
+        <option value="applied-asc">Oldest applied</option>
+        <option value="updated-desc">Recently updated</option>
+        <option value="company-asc">Company A–Z</option>
+      </select>
+      <label class="toggle"><input type="checkbox" id="hide-closed"> Hide rejected / withdrawn</label>
+    </section>
+
+    <div class="table-wrap">
+      <table id="jobs-table">
+        <thead>
+          <tr>
+            <th>Position</th>
+            <th>Applied</th>
+            <th class="c" title="Got a response">Response</th>
+            <th class="c" title="Interview scheduled">Int. sched.</th>
+            <th class="c" title="Interview attended">Interviewed</th>
+            <th class="c">Offer</th>
+            <th class="c">Rejected</th>
+            <th>Status</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="jobs-body"></tbody>
+      </table>
+      <p id="empty" class="empty hidden"></p>
+    </div>
+  </main>
+
+  <dialog id="editor">
+    <form id="edit-form" method="dialog" autocomplete="off">
+      <h2 id="editor-title">Edit application</h2>
+      <input type="hidden" name="id">
+      <div class="grid2">
+        <label class="field"><span>Position</span><input type="text" name="title" required></label>
+        <label class="field"><span>Company</span><input type="text" name="company" required></label>
+        <label class="field"><span>Location</span><input type="text" name="location"></label>
+        <label class="field"><span>Salary</span><input type="text" name="salary"></label>
+        <label class="field"><span>Employment type</span><input type="text" name="employmentType"></label>
+        <label class="field"><span>Contact / recruiter</span><input type="text" name="contact"></label>
+      </div>
+      <label class="field"><span>Job posting URL</span><input type="url" name="url"></label>
+      <label class="field"><span>Next interview</span><input type="datetime-local" name="nextInterview"></label>
+
+      <fieldset>
+        <legend>Progress — tick a step and adjust its date</legend>
+        <div id="edit-milestones" class="edit-milestones"></div>
+      </fieldset>
+
+      <label class="field"><span>Notes</span><textarea name="notes" rows="3"></textarea></label>
+      <details>
+        <summary>Job description</summary>
+        <textarea name="description" rows="8"></textarea>
+      </details>
+
+      <div class="dialog-actions">
+        <button type="button" id="delete-btn" class="danger">Delete</button>
+        <span class="spacer"></span>
+        <button type="button" id="cancel-btn">Cancel</button>
+        <button type="submit" class="primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="src/shared.js"></script>
+  <script src="src/dashboard.js"></script>
+</body>
+</html>
